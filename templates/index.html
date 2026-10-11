@@ -1,0 +1,905 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Raj Kushwaha | Flask + MySQL App</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #030b19;
+            --panel: #07162b;
+            --border: #193657;
+            --blue: #168bff;
+            --purple: #8b5cf6;
+            --text: #f0f6ff;
+            --muted: #9cb4d4;
+            --green: #19d3a2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(ellipse at top left, #25104c 0%, transparent 35%),
+                radial-gradient(ellipse at bottom right, #200c3e 0%, transparent 30%),
+                var(--bg);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .page {
+            width: min(1440px, 94%);
+            margin: auto;
+        }
+
+        /* Navigation */
+
+        .navbar {
+            margin-top: 20px;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+
+            background: rgba(7, 22, 43, 0.88);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .brand-icon {
+            font-size: 38px;
+            color: var(--blue);
+        }
+
+        .brand h2 {
+            font-size: 23px;
+            letter-spacing: -1px;
+        }
+
+        .brand h2 span {
+            color: var(--blue);
+        }
+
+        .brand p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #c6d8f2;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--blue);
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 30px;
+            background: rgba(25, 211, 162, 0.12);
+            color: #65f2c9;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        /* Main layout */
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .panel {
+            min-width: 0;
+            padding: 28px;
+            border-radius: 18px;
+            background: linear-gradient(
+                145deg,
+                rgba(9, 29, 54, 0.97),
+                rgba(4, 15, 31, 0.98)
+            );
+            border: 1px solid var(--border);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Introduction */
+
+        .welcome-label {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: clamp(30px, 4vw, 47px);
+            line-height: 1.2;
+            letter-spacing: -1.8px;
+            margin-bottom: 18px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(100deg, #15a3ff, #9270ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-description {
+            max-width: 520px;
+            line-height: 1.8;
+            color: #bdd0eb;
+            font-size: 14px;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin: 27px 0;
+        }
+
+        .tech-card {
+            min-width: 0;
+            padding: 19px 8px;
+            text-align: center;
+            border-radius: 13px;
+            background: rgba(13, 34, 60, 0.75);
+            border: 1px solid var(--border);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--blue);
+        }
+
+        .tech-card i {
+            font-size: 27px;
+            color: #35a7ff;
+            margin-bottom: 14px;
+        }
+
+        .tech-card h3 {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .tech-card p {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 7px;
+        }
+
+        /* Message form */
+
+        .form-card {
+            padding: 21px;
+            border: 1px solid var(--border);
+            background: rgba(10, 29, 53, 0.7);
+            border-radius: 15px;
+            scroll-margin-top: 25px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 19px;
+        }
+
+        .section-title i {
+            color: var(--purple);
+        }
+
+        .section-description {
+            color: #b7cbe6;
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 15px;
+            top: 17px;
+            color: #78a9e9;
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 15px 15px 15px 43px;
+            border: 1px solid #25476d;
+            border-radius: 10px;
+            background: #06152a;
+            color: white;
+            outline: none;
+            font-size: 13px;
+            transition: border-color 0.2s;
+        }
+
+        .message-input:focus {
+            border-color: var(--blue);
+        }
+
+        .message-input::placeholder {
+            color: #829bbd;
+        }
+
+        .send-button {
+            width: 100%;
+            margin-top: 13px;
+            padding: 15px;
+            color: white;
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: linear-gradient(100deg, #168bff, #8654f5);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            opacity: 0.92;
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .send-button i {
+            margin-right: 8px;
+        }
+
+        .form-status {
+            min-height: 20px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* Message history */
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 23px;
+        }
+
+        .history-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .history-title > i {
+            font-size: 29px;
+            color: #8b78ff;
+        }
+
+        .history-title h2 {
+            font-size: 21px;
+        }
+
+        .history-title p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .total-badge {
+            padding: 11px 13px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #0b2040;
+            color: #b9d7ff;
+            font-size: 12px;
+        }
+
+        .total-badge i {
+            color: var(--blue);
+            margin-right: 5px;
+        }
+
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 530px;
+            overflow-y: auto;
+            padding-right: 3px;
+        }
+
+        .message-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 15px;
+            min-width: 0;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: rgba(12, 32, 57, 0.7);
+            animation: appear 0.3s ease;
+        }
+
+        .message-number {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 37px;
+            height: 37px;
+            border-radius: 50%;
+            background: linear-gradient(140deg, #168bff, #4c5dff);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .message-content {
+            min-width: 0;
+            flex: 1;
+            overflow-wrap: anywhere;
+            color: #e6efff;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            padding: 30px 15px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+        }
+
+        .empty-state i {
+            display: block;
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: var(--blue);
+        }
+
+        /* Footer */
+
+        .footer {
+            margin: 28px 0 12px;
+            padding: 23px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: rgba(7, 22, 43, 0.85);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-block {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            min-width: 0;
+        }
+
+        .footer-icon {
+            width: 43px;
+            height: 43px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #112c55;
+            color: #dceaff;
+            font-size: 18px;
+        }
+
+        .footer-label {
+            color: var(--muted);
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+        .footer-name {
+            color: #29a5ff;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .footer-detail {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .footer-link {
+            color: #38aaff;
+            font-size: 12px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding: 8px 0 22px;
+            color: #7f9cbe;
+            font-size: 11px;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive layout */
+
+        @media (max-width: 1050px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .message-list {
+                max-height: 450px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .page {
+                width: 94%;
+            }
+
+            .navbar {
+                padding: 17px;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .panel {
+                padding: 19px;
+            }
+
+            .tech-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .footer {
+                grid-template-columns: 1fr;
+            }
+
+            .history-title h2 {
+                font-size: 17px;
+            }
+
+            .message-item {
+                padding: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+
+        <!-- Navigation -->
+        <header class="navbar">
+
+            <a class="brand" href="#home">
+                <i class="fa-brands fa-docker brand-icon"></i>
+
+                <div>
+                    <h2>Flask + <span>MySQL</span></h2>
+                    <p>Two-Tier Application</p>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="#home"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="#messages"><i class="fa-regular fa-comments"></i> Messages</a>
+                <a href="#about"><i class="fa-regular fa-user"></i> About</a>
+                <a href="https://github.com/" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-brands fa-github"></i> GitHub
+                </a>
+            </nav>
+
+            <div class="status">
+                <span class="status-dot"></span>
+                Flask + MySQL
+            </div>
+
+        </header>
+
+
+        <!-- Main Content -->
+        <main class="main-grid" id="home">
+
+            <!-- Left Panel -->
+            <section class="panel hero">
+
+                <p class="welcome-label">
+                    <i class="fa-solid fa-terminal"></i>
+                    MY DEVOPS LEARNING PROJECT
+                </p>
+
+                <h1>
+                    Welcome to<br>
+                    <span class="gradient-text">Flask + MySQL</span> App
+                </h1>
+
+                <p class="hero-description">
+                    A two-tier web application built with Python Flask and MySQL,
+                    containerized using Docker. This project demonstrates
+                    application-to-database communication and container networking.
+                </p>
+
+
+                <!-- Technology Cards -->
+                <div class="tech-grid">
+
+                    <div class="tech-card">
+                        <i class="fa-brands fa-python"></i>
+                        <h3>Python Flask</h3>
+                        <p>Backend</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <i class="fa-solid fa-database"></i>
+                        <h3>MySQL</h3>
+                        <p>Database</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <i class="fa-brands fa-docker"></i>
+                        <h3>Docker</h3>
+                        <p>Containers</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <i class="fa-solid fa-network-wired"></i>
+                        <h3>Docker Compose</h3>
+                        <p>Services</p>
+                    </div>
+
+                </div>
+
+
+                <!-- Message Form -->
+                <div class="form-card" id="send-message">
+
+                    <h2 class="section-title">
+                        <i class="fa-regular fa-message"></i>
+                        Send a Message
+                    </h2>
+
+                    <p class="section-description">
+                        Enter a message below and submit it to the application.
+                        Your Flask backend will process the request and store it in MySQL.
+                    </p>
+
+                    <form id="messageForm">
+
+                        <div class="input-wrap">
+                            <i class="fa-regular fa-comment-dots"></i>
+
+                            <input
+                                type="text"
+                                class="message-input"
+                                name="new_message"
+                                placeholder="Type your message..."
+                                maxlength="500"
+                                autocomplete="off"
+                                required
+                            >
+                        </div>
+
+                        <button type="submit" class="send-button" id="sendButton">
+                            <i class="fa-regular fa-paper-plane"></i>
+                            Send Message
+                        </button>
+
+                        <p class="form-status" id="formStatus" role="status"
+                           aria-live="polite"></p>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+
+            <!-- Right Panel -->
+            <section class="panel" id="messages">
+
+                <div class="history-header">
+
+                    <div class="history-title">
+                        <i class="fa-regular fa-comments"></i>
+
+                        <div>
+                            <h2>Message History</h2>
+                            <p>Messages displayed from the application database.</p>
+                        </div>
+                    </div>
+
+                    <div class="total-badge">
+                        <i class="fa-solid fa-database"></i>
+                        Total Messages: <span id="messageCount">{{ messages|length }}</span>
+                    </div>
+
+                </div>
+
+
+                <div class="message-list" id="messageList">
+
+                    {% for message in messages %}
+
+                    <div class="message-item">
+
+                        <div class="message-number">{{ loop.index }}</div>
+
+                        <div class="message-content">{{ message[0] }}</div>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="empty-state" id="emptyState">
+                        <i class="fa-regular fa-comments"></i>
+                        No messages yet. Send your first message!
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- Footer -->
+        <footer class="footer" id="about">
+
+            <div class="footer-block">
+
+                <div class="footer-icon">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+
+                <div>
+                    <p class="footer-label">Developed by</p>
+                    <p class="footer-name">Raj Kushwaha</p>
+                    <p class="footer-detail">
+                        DevOps Engineer | Cloud & Automation
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="footer-block">
+
+                <div class="footer-icon">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+
+                <div>
+                    <p class="footer-label">Project</p>
+                    <p class="footer-name">Flask + MySQL</p>
+                    <p class="footer-detail">
+                        Python | Docker | MySQL | Docker Compose
+                    </p>
+                    <a class="footer-link"
+                       href="https://github.com/"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <i class="fa-brands fa-github"></i>
+                        GitHub Repository
+                    </a>
+                </div>
+
+            </div>
+
+
+            <div class="footer-block">
+
+                <div class="footer-icon">
+                    <i class="fa-solid fa-cloud"></i>
+                </div>
+
+                <div>
+                    <p class="footer-label">Career Focus</p>
+                    <p class="footer-name">DevOps & Cloud</p>
+                    <p class="footer-detail">
+                        Learning containerization, automation and deployment.
+                    </p>
+                </div>
+
+            </div>
+
+        </footer>
+
+
+        <div class="copyright">
+            &copy; <span id="year"></span> Raj Kushwaha |
+            Flask + MySQL Two-Tier Application
+        </div>
+
+    </div>
+
+
+    <!-- jQuery: handles asynchronous message submission -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $("#year").text(new Date().getFullYear());
+
+            $("#messageForm").on("submit", function (event) {
+
+                event.preventDefault();
+
+                const messageInput = $("input[name='new_message']");
+                const message = messageInput.val().trim();
+                const button = $("#sendButton");
+                const status = $("#formStatus");
+
+                if (!message) {
+                    status.text("Please enter a message.");
+                    return;
+                }
+
+                button.prop("disabled", true);
+                status.text("Sending message...");
+
+                $.ajax({
+                    url: "/submit",
+                    type: "POST",
+                    data: {
+                        new_message: message
+                    },
+
+                    success: function (response) {
+
+                        if (response && response.message) {
+
+                            $("#emptyState").remove();
+
+                            const currentCount =
+                                $("#messageList .message-item").length;
+
+                            const number = currentCount + 1;
+
+                            // Use textContent rather than HTML interpolation
+                            // so user-submitted messages are displayed safely.
+                            const item = document.createElement("div");
+                            item.className = "message-item";
+
+                            const badge = document.createElement("div");
+                            badge.className = "message-number";
+                            badge.textContent = number;
+
+                            const content = document.createElement("div");
+                            content.className = "message-content";
+                            content.textContent = response.message;
+
+                            item.appendChild(badge);
+                            item.appendChild(content);
+
+                            $("#messageList").append(item);
+
+                            $("#messageCount").text(number);
+
+                            messageInput.val("");
+                            status.text("Message saved successfully!");
+
+                        } else {
+                            status.text("Unexpected response from the server.");
+                        }
+                    },
+
+                    error: function (xhr) {
+
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            status.text(xhr.responseJSON.error);
+                        } else {
+                            status.text(
+                                "Could not submit the message. Please check the server."
+                            );
+                        }
+
+                        console.error("Request failed:", xhr.status);
+                    },
+
+                    complete: function () {
+                        button.prop("disabled", false);
+                    }
+                });
+
+            });
+
+        });
+    </script>
+
+</body>
+</html>
+```
